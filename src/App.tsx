@@ -5,8 +5,10 @@ import { Sidebar } from './components/Sidebar';
 import { FileList } from './components/FileList';
 import { ContextMenu } from './components/ContextMenu';
 import { LoadingSpinner } from './components/LoadingSpinner';
+import { ConfirmDialog, PromptDialog, AlertDialog } from './components/Modal';
 import { useFileSystem } from './hooks/useFileSystem';
 import { useDragDrop } from './hooks/useDragDrop';
+import { useModal } from './hooks/useModal';
 import { FileSystemItem } from './types/fileSystem';
 import { fileSystemAPI } from './utils/fileSystemAPI';
 import { FolderOpen, AlertCircle } from 'lucide-react';
@@ -69,6 +71,7 @@ function App() {
   }, [refresh, setError]);
 
   const dragDropState = useDragDrop(handleMoveItems);
+  const modal = useModal();
 
   useEffect(() => {
     const checkSupport = async () => {
@@ -128,19 +131,33 @@ function App() {
       case 'Delete':
         if (selectedItems.size > 0) {
           const itemsToDelete = items.filter(item => selectedItems.has(item.path));
-          if (window.confirm(`Delete ${itemsToDelete.length} item(s)?`)) {
-            deleteItems(itemsToDelete);
-          }
+          modal.showConfirm({
+            title: 'Delete Items',
+            message: `Are you sure you want to delete ${itemsToDelete.length} item(s)? This action cannot be undone.`,
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+            variant: 'danger',
+            onConfirm: () => deleteItems(itemsToDelete)
+          });
         }
         break;
       case 'F2':
         if (selectedItems.size === 1) {
           const item = items.find(item => selectedItems.has(item.path));
           if (item) {
-            const newName = prompt('Rename to:', item.name);
-            if (newName && newName !== item.name) {
-              renameItem(item, newName);
-            }
+            modal.showPrompt({
+              title: 'Rename Item',
+              message: `Enter a new name for "${item.name}":`,
+              defaultValue: item.name,
+              placeholder: 'Enter new name...',
+              confirmText: 'Rename',
+              cancelText: 'Cancel',
+              onConfirm: (newName) => {
+                if (newName && newName !== item.name) {
+                  renameItem(item, newName);
+                }
+              }
+            });
           }
         }
         break;
@@ -182,20 +199,36 @@ function App() {
 
     if (e.ctrlKey && e.shiftKey && e.key === 'N') {
       e.preventDefault();
-      const name = prompt('Folder name:');
-      if (name) {
-        createDirectory(name);
-      }
+      modal.showPrompt({
+        title: 'Create Folder',
+        message: 'Enter the name for the new folder:',
+        placeholder: 'Folder name...',
+        confirmText: 'Create',
+        cancelText: 'Cancel',
+        onConfirm: (name) => {
+          if (name) {
+            createDirectory(name);
+          }
+        }
+      });
     }
 
     if (e.ctrlKey && e.altKey && e.key === 'N') {
       e.preventDefault();
-      const name = prompt('File name:');
-      if (name) {
-        createFile(name);
-      }
+      modal.showPrompt({
+        title: 'Create File',
+        message: 'Enter the name for the new file:',
+        placeholder: 'File name...',
+        confirmText: 'Create',
+        cancelText: 'Cancel',
+        onConfirm: (name) => {
+          if (name) {
+            createFile(name);
+          }
+        }
+      });
     }
-  }, [selectedItems, items, deleteItems, renameItem, refresh, clearSelection, selectAll, copyItems, cutItems, hasClipboard, pasteItems, createDirectory, createFile]);
+  }, [selectedItems, items, deleteItems, renameItem, refresh, clearSelection, selectAll, copyItems, cutItems, hasClipboard, pasteItems, createDirectory, createFile, modal]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -203,17 +236,33 @@ function App() {
   }, [handleKeyDown]);
 
   const handleCreateDirectory = () => {
-    const name = prompt('Folder name:');
-    if (name) {
-      createDirectory(name);
-    }
+    modal.showPrompt({
+      title: 'Create Folder',
+      message: 'Enter the name for the new folder:',
+      placeholder: 'Folder name...',
+      confirmText: 'Create',
+      cancelText: 'Cancel',
+      onConfirm: (name) => {
+        if (name) {
+          createDirectory(name);
+        }
+      }
+    });
   };
 
   const handleCreateFile = () => {
-    const name = prompt('File name:');
-    if (name) {
-      createFile(name);
-    }
+    modal.showPrompt({
+      title: 'Create File',
+      message: 'Enter the name for the new file:',
+      placeholder: 'File name...',
+      confirmText: 'Create',
+      cancelText: 'Cancel',
+      onConfirm: (name) => {
+        if (name) {
+          createFile(name);
+        }
+      }
+    });
   };
 
   const handleContextMenuAction = (action: string, item?: FileSystemItem) => {
@@ -242,34 +291,62 @@ function App() {
         break;
       case 'delete':
         if (item) {
-          if (window.confirm(`Delete ${item.name}?`)) {
-            deleteItems([item]);
-          }
+          modal.showConfirm({
+            title: 'Delete Item',
+            message: `Are you sure you want to delete "${item.name}"? This action cannot be undone.`,
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+            variant: 'danger',
+            onConfirm: () => deleteItems([item])
+          });
         } else if (selectedItems.size > 0) {
           const itemsToDelete = items.filter(i => selectedItems.has(i.path));
-          if (window.confirm(`Delete ${itemsToDelete.length} item(s)?`)) {
-            deleteItems(itemsToDelete);
-          }
+          modal.showConfirm({
+            title: 'Delete Items',
+            message: `Are you sure you want to delete ${itemsToDelete.length} item(s)? This action cannot be undone.`,
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+            variant: 'danger',
+            onConfirm: () => deleteItems(itemsToDelete)
+          });
         }
         break;
       case 'rename':
         if (item) {
-          const newName = prompt('Rename to:', item.name);
-          if (newName && newName !== item.name) {
-            renameItem(item, newName);
-          }
+          modal.showPrompt({
+            title: 'Rename Item',
+            message: `Enter a new name for "${item.name}":`,
+            defaultValue: item.name,
+            placeholder: 'Enter new name...',
+            confirmText: 'Rename',
+            cancelText: 'Cancel',
+            onConfirm: (newName) => {
+              if (newName && newName !== item.name) {
+                renameItem(item, newName);
+              }
+            }
+          });
         }
         break;
       case 'addBookmark':
         if (item && item.kind === 'directory') {
-          const name = prompt('Bookmark name:', item.name);
-          if (name) {
-            addBookmark({
-              name,
-              path: item.path,
-              icon: '📁'
-            });
-          }
+          modal.showPrompt({
+            title: 'Add Bookmark',
+            message: `Enter a name for the bookmark:`,
+            defaultValue: item.name,
+            placeholder: 'Bookmark name...',
+            confirmText: 'Add',
+            cancelText: 'Cancel',
+            onConfirm: (name) => {
+              if (name) {
+                addBookmark({
+                  name,
+                  path: item.path,
+                  icon: '📁'
+                });
+              }
+            }
+          });
         }
         break;
       case 'createDirectory':
@@ -297,7 +374,7 @@ function App() {
           <div className="access-screen">
             <div className="access-content">
               <FolderOpen size={64} className="access-icon" />
-              <h1>Browser File Explorer</h1>
+              <h1>Fileslop</h1>
               <p>
                 This application allows you to browse and manage files using your browser.
                 Click the button below to select a folder to explore.
@@ -369,6 +446,7 @@ function App() {
             onNavigate={navigateTo}
             onAddBookmark={addBookmark}
             onRemoveBookmark={removeBookmark}
+            onShowPrompt={modal.showPrompt}
           />
 
           <main className="main-content">
@@ -421,6 +499,38 @@ function App() {
             onAddBookmark={() => handleContextMenuAction('addBookmark', contextMenu.item)}
           />
         )}
+
+        <ConfirmDialog
+          isOpen={modal.modals.confirm.isOpen}
+          onClose={modal.hideConfirm}
+          onConfirm={modal.modals.confirm.onConfirm}
+          title={modal.modals.confirm.title}
+          message={modal.modals.confirm.message}
+          confirmText={modal.modals.confirm.confirmText}
+          cancelText={modal.modals.confirm.cancelText}
+          variant={modal.modals.confirm.variant}
+        />
+
+        <PromptDialog
+          isOpen={modal.modals.prompt.isOpen}
+          onClose={modal.hidePrompt}
+          onConfirm={modal.modals.prompt.onConfirm}
+          title={modal.modals.prompt.title}
+          message={modal.modals.prompt.message}
+          placeholder={modal.modals.prompt.placeholder}
+          defaultValue={modal.modals.prompt.defaultValue}
+          confirmText={modal.modals.prompt.confirmText}
+          cancelText={modal.modals.prompt.cancelText}
+        />
+
+        <AlertDialog
+          isOpen={modal.modals.alert.isOpen}
+          onClose={modal.hideAlert}
+          title={modal.modals.alert.title}
+          message={modal.modals.alert.message}
+          variant={modal.modals.alert.variant}
+          buttonText={modal.modals.alert.buttonText}
+        />
       </div>
     </ErrorBoundary>
   );

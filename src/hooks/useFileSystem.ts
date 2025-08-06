@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { FileSystemState, FileSystemItem, FileOperationClipboard, Bookmark } from '../types/fileSystem';
 import { fileSystemAPI } from '../utils/fileSystemAPI';
 
-const BOOKMARKS_STORAGE_KEY = 'file-explorer-bookmarks';
+const BOOKMARKS_STORAGE_KEY = 'fileslop-bookmarks';
 
 const initialState: FileSystemState = {
   currentPath: '/',

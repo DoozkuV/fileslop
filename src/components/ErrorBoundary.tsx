@@ -37,7 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="error-content">
             <AlertTriangle size={48} className="error-icon" />
             <h1>Something went wrong</h1>
-            <p>An unexpected error occurred in the file explorer.</p>
+            <p>An unexpected error occurred in Fileslop.</p>
             
             {this.state.error && (
               <details className="error-details">

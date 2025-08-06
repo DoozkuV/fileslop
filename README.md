@@ -1,6 +1,6 @@
-# Browser File Explorer
+# Fileslop
 
-A modern, feature-rich file explorer built for web browsers using React, TypeScript, and the File System Access API. This application provides a native file manager experience directly in your browser with support for advanced file operations, drag-and-drop, bookmarks, and more.
+A modern, feature-rich browser-based file manager built with React, TypeScript, and the File System Access API. Fileslop provides a native file manager experience directly in your browser with support for advanced file operations, drag-and-drop, bookmarks, and more.
 
 ## ✨ Features
 
@@ -56,7 +56,7 @@ The built files will be in the `dist` directory and can be served by any static 
 
 ## 🖥️ Browser Compatibility
 
-This application uses the **File System Access API**, which provides direct access to the user's file system. Browser support:
+Fileslop uses the **File System Access API**, which provides direct access to the user's file system. Browser support:
 
 - ✅ **Chrome 86+** - Full support
 - ✅ **Edge 86+** - Full support  
@@ -65,7 +65,7 @@ This application uses the **File System Access API**, which provides direct acce
 
 ### Fallback Behavior
 
-For browsers without File System Access API support, the application will:
+For browsers without File System Access API support, Fileslop will:
 - Display a compatibility warning
 - Allow file upload/download operations
 - Provide limited file management capabilities

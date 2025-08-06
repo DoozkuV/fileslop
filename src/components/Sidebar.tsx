@@ -8,6 +8,15 @@ interface SidebarProps {
   onNavigate: (path: string) => void;
   onAddBookmark: (bookmark: Omit<Bookmark, 'id'>) => void;
   onRemoveBookmark: (id: string) => void;
+  onShowPrompt: (options: {
+    title: string;
+    message: string;
+    onConfirm: (value: string) => void;
+    placeholder?: string;
+    defaultValue?: string;
+    confirmText?: string;
+    cancelText?: string;
+  }) => void;
 }
 
 export function Sidebar({
@@ -15,21 +24,32 @@ export function Sidebar({
   currentPath,
   onNavigate,
   onAddBookmark,
-  onRemoveBookmark
+  onRemoveBookmark,
+  onShowPrompt
 }: SidebarProps) {
   const defaultBookmarks = [
     { name: 'Root', path: '/', icon: '🏠' }
   ];
 
   const handleAddCurrentBookmark = () => {
-    const name = prompt('Bookmark name:');
-    if (name?.trim()) {
-      onAddBookmark({
-        name: name.trim(),
-        path: currentPath,
-        icon: '📁'
-      });
-    }
+    const folderName = currentPath === '/' ? 'Root' : currentPath.split('/').pop() || 'Folder';
+    onShowPrompt({
+      title: 'Add Bookmark',
+      message: `Enter a name for this bookmark:`,
+      defaultValue: folderName,
+      placeholder: 'Bookmark name...',
+      confirmText: 'Add',
+      cancelText: 'Cancel',
+      onConfirm: (name) => {
+        if (name?.trim()) {
+          onAddBookmark({
+            name: name.trim(),
+            path: currentPath,
+            icon: '📁'
+          });
+        }
+      }
+    });
   };
 
   return (
