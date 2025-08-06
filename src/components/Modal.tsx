@@ -49,15 +49,19 @@ export function Modal({
   return (
     <div
       ref={overlayRef}
-      className="modal-overlay"
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2000] p-4"
       onClick={handleOverlayClick}
     >
-      <div className={`modal-content modal-${size}`}>
-        <div className="modal-header">
-          <h2 className="modal-title">{title}</h2>
+      <div className={`bg-white rounded-xl shadow-xl border border-primary-200 max-h-[90vh] overflow-y-auto animate-fade-in ${
+        size === 'sm' ? 'w-full max-w-sm' : 
+        size === 'lg' ? 'w-full max-w-3xl' : 
+        'w-full max-w-xl'
+      }`}>
+        <div className="flex items-center justify-between px-6 pt-6 pb-0 mb-4">
+          <h2 className="text-xl font-semibold text-primary-900">{title}</h2>
           {showCloseButton && (
             <button
-              className="modal-close"
+              className="flex items-center justify-center w-8 h-8 border-none rounded-md bg-transparent text-primary-400 cursor-pointer transition-all hover:bg-primary-100 hover:text-primary-900"
               onClick={onClose}
               aria-label="Close modal"
             >
@@ -65,7 +69,7 @@ export function Modal({
             </button>
           )}
         </div>
-        <div className="modal-body">
+        <div className="px-6 pb-6">
           {children}
         </div>
       </div>
@@ -102,32 +106,38 @@ export function ConfirmDialog({
   const getIcon = () => {
     switch (variant) {
       case 'danger':
-        return <XCircle className="dialog-icon dialog-icon-danger" size={24} />;
+        return <XCircle className="text-red-500 flex-shrink-0 mt-0.5" size={24} />;
       case 'warning':
-        return <AlertTriangle className="dialog-icon dialog-icon-warning" size={24} />;
+        return <AlertTriangle className="text-amber-500 flex-shrink-0 mt-0.5" size={24} />;
       case 'info':
-        return <Info className="dialog-icon dialog-icon-info" size={24} />;
+        return <Info className="text-accent-400 flex-shrink-0 mt-0.5" size={24} />;
       default:
-        return <AlertTriangle className="dialog-icon dialog-icon-warning" size={24} />;
+        return <AlertTriangle className="text-amber-500 flex-shrink-0 mt-0.5" size={24} />;
     }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
-      <div className="confirm-dialog">
-        <div className="confirm-dialog-content">
+      <div className="min-w-80">
+        <div className="flex items-start gap-4 mb-6">
           {getIcon()}
-          <p className="confirm-dialog-message">{message}</p>
+          <p className="text-primary-900 leading-relaxed flex-1">{message}</p>
         </div>
-        <div className="confirm-dialog-actions">
+        <div className="flex gap-3 justify-end">
           <button
-            className="button button-secondary"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 border border-primary-300 rounded-md text-sm font-medium cursor-pointer transition-all text-primary-900 bg-primary-50 hover:bg-primary-100 hover:border-primary-400 min-w-20"
             onClick={onClose}
           >
             {cancelText}
           </button>
           <button
-            className={`button button-${variant}`}
+            className={`inline-flex items-center justify-center gap-2 px-5 py-3 border rounded-md text-sm font-medium cursor-pointer transition-all text-white min-w-20 ${
+              variant === 'danger' 
+                ? 'bg-red-500 border-red-500 hover:bg-red-600 hover:border-red-600' 
+                : variant === 'warning'
+                ? 'bg-amber-500 border-amber-500 hover:bg-amber-600 hover:border-amber-600'
+                : 'bg-accent-400 border-accent-400 hover:bg-accent-500 hover:border-accent-500'
+            }`}
             onClick={handleConfirm}
           >
             {confirmText}
@@ -186,29 +196,31 @@ export function PromptDialog({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
-      <div className="prompt-dialog">
-        <div className="prompt-dialog-content">
-          <Info className="dialog-icon dialog-icon-info" size={24} />
-          <p className="prompt-dialog-message">{message}</p>
-          <input
-            ref={inputRef}
-            type="text"
-            className="prompt-dialog-input"
-            placeholder={placeholder}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
+      <div className="min-w-80">
+        <div className="flex items-start gap-4 mb-6">
+          <Info className="text-accent-400 flex-shrink-0 mt-0.5" size={24} />
+          <div className="flex-1">
+            <p className="text-primary-900 leading-relaxed mb-4">{message}</p>
+            <input
+              ref={inputRef}
+              type="text"
+              className="w-full mt-4 px-3 py-2 border border-primary-200 rounded-md bg-white text-primary-900 text-sm transition-colors focus:outline-none focus:border-accent-400 placeholder:text-primary-400"
+              placeholder={placeholder}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
         </div>
-        <div className="prompt-dialog-actions">
+        <div className="flex gap-3 justify-end">
           <button
-            className="button button-secondary"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 border border-primary-300 rounded-md text-sm font-medium cursor-pointer transition-all text-primary-900 bg-primary-50 hover:bg-primary-100 hover:border-primary-400 min-w-20"
             onClick={onClose}
           >
             {cancelText}
           </button>
           <button
-            className="button button-primary"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 border border-accent-400 rounded-md text-sm font-medium cursor-pointer transition-all text-white bg-accent-400 hover:bg-accent-500 hover:border-accent-500 min-w-20 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleConfirm}
             disabled={!value.trim()}
           >
@@ -240,28 +252,28 @@ export function AlertDialog({
   const getIcon = () => {
     switch (variant) {
       case 'success':
-        return <CheckCircle className="dialog-icon dialog-icon-success" size={24} />;
+        return <CheckCircle className="text-green-500 flex-shrink-0 mt-0.5" size={24} />;
       case 'error':
-        return <XCircle className="dialog-icon dialog-icon-danger" size={24} />;
+        return <XCircle className="text-red-500 flex-shrink-0 mt-0.5" size={24} />;
       case 'warning':
-        return <AlertTriangle className="dialog-icon dialog-icon-warning" size={24} />;
+        return <AlertTriangle className="text-amber-500 flex-shrink-0 mt-0.5" size={24} />;
       case 'info':
-        return <Info className="dialog-icon dialog-icon-info" size={24} />;
+        return <Info className="text-accent-400 flex-shrink-0 mt-0.5" size={24} />;
       default:
-        return <Info className="dialog-icon dialog-icon-info" size={24} />;
+        return <Info className="text-accent-400 flex-shrink-0 mt-0.5" size={24} />;
     }
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
-      <div className="alert-dialog">
-        <div className="alert-dialog-content">
+      <div className="min-w-80">
+        <div className="flex items-start gap-4 mb-6">
           {getIcon()}
-          <p className="alert-dialog-message">{message}</p>
+          <p className="text-primary-900 leading-relaxed flex-1">{message}</p>
         </div>
-        <div className="alert-dialog-actions">
+        <div className="flex justify-end">
           <button
-            className="button button-primary"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 border border-accent-400 rounded-md text-sm font-medium cursor-pointer transition-all text-white bg-accent-400 hover:bg-accent-500 hover:border-accent-500 min-w-20"
             onClick={onClose}
           >
             {buttonText}

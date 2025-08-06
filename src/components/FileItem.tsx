@@ -107,9 +107,6 @@ export function FileItem({
     handleRename();
   };
 
-  const startRename = () => {
-    setIsRenaming(true);
-  };
 
   const handleDragStartWrapper = (e: React.DragEvent) => {
     if (onDragStart) {
@@ -132,7 +129,13 @@ export function FileItem({
   if (viewMode === 'grid') {
     return (
       <div
-        className={`grid-item ${isSelected ? 'selected' : ''} ${isDragging ? 'dragging' : ''} ${isDragOver && item.kind === 'directory' && canDrop ? 'drag-over' : ''}`}
+        className={`flex flex-col items-center p-4 border border-transparent rounded-lg cursor-pointer transition-all bg-white ${
+          isSelected ? 'bg-accent-50 border-accent-400' : 'hover:bg-primary-50 hover:border-primary-300'
+        } ${
+          isDragging ? 'opacity-50 scale-95' : ''
+        } ${
+          isDragOver && item.kind === 'directory' && canDrop ? 'bg-accent-50 border-accent-400 shadow-[0_0_0_2px_rgba(59,130,246,0.3)] animate-pulse-scale' : ''
+        }`}
         onClick={handleClick}
         onDoubleClick={handleDoubleClick}
         onContextMenu={(e) => onContextMenu(e, item)}
@@ -147,16 +150,16 @@ export function FileItem({
         role="button"
         aria-label={`${item.kind}: ${item.name}`}
       >
-        <div className="grid-item-icon">
+        <div className="mb-3">
           {thumbnail ? (
-            <img src={thumbnail} alt={item.name} className="thumbnail" />
+            <img src={thumbnail} alt={item.name} className="w-16 h-16 object-cover rounded border border-primary-200" />
           ) : (
-            <span className="file-icon" role="img" aria-label={item.kind}>
+            <span className="text-4xl" role="img" aria-label={item.kind}>
               {getFileIcon(item.name, item.kind)}
             </span>
           )}
         </div>
-        <div className="grid-item-info">
+        <div className="text-center w-full">
           {isRenaming ? (
             <input
               ref={inputRef}
@@ -165,10 +168,10 @@ export function FileItem({
               onChange={(e) => setRenameValue(e.target.value)}
               onBlur={handleRenameBlur}
               onKeyDown={handleKeyDown}
-              className="rename-input"
+              className="text-center max-w-full text-xs border border-accent-400 rounded px-2 py-1 bg-white text-primary-900 focus:outline-none"
             />
           ) : (
-            <span className="grid-item-name truncate" title={item.name}>
+            <span className="text-xs leading-tight break-words block overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}} title={item.name}>
               {item.name}
             </span>
           )}
@@ -179,7 +182,13 @@ export function FileItem({
 
   return (
     <tr
-      className={`list-item ${isSelected ? 'selected' : ''} ${isDragging ? 'dragging' : ''} ${isDragOver && item.kind === 'directory' && canDrop ? 'drag-over' : ''}`}
+      className={`border-b border-primary-200 cursor-pointer transition-colors ${
+        isSelected ? 'bg-accent-50' : 'hover:bg-primary-50'
+      } ${
+        isDragging ? 'opacity-50 scale-95' : ''
+      } ${
+        isDragOver && item.kind === 'directory' && canDrop ? 'bg-accent-50 animate-pulse-scale' : ''
+      }`}
       onClick={handleClick}
       onDoubleClick={handleDoubleClick}
       onContextMenu={(e) => onContextMenu(e, item)}
@@ -193,9 +202,9 @@ export function FileItem({
       tabIndex={0}
       role="row"
     >
-      <td className="name-cell">
-        <div className="name-content">
-          <span className="file-icon" role="img" aria-label={item.kind}>
+      <td className="px-4 py-3 text-sm align-middle">
+        <div className="flex items-center gap-3">
+          <span className="text-xl flex-shrink-0" role="img" aria-label={item.kind}>
             {getFileIcon(item.name, item.kind)}
           </span>
           {isRenaming ? (
@@ -206,24 +215,24 @@ export function FileItem({
               onChange={(e) => setRenameValue(e.target.value)}
               onBlur={handleRenameBlur}
               onKeyDown={handleKeyDown}
-              className="rename-input"
+              className="border border-accent-400 rounded px-2 py-1 bg-white text-primary-900 text-sm w-full max-w-48 focus:outline-none"
             />
           ) : (
-            <span className="file-name truncate" title={item.name}>
+            <span className="flex-1 min-w-0 truncate" title={item.name}>
               {item.name}
             </span>
           )}
         </div>
       </td>
-      <td className="size-cell">
+      <td className="px-4 py-3 text-sm text-primary-600 align-middle">
         {item.kind === 'file' && item.size !== undefined
           ? formatFileSize(item.size)
           : '-'}
       </td>
-      <td className="date-cell">
+      <td className="px-4 py-3 text-sm text-primary-600 align-middle">
         {item.lastModified ? formatDate(item.lastModified) : '-'}
       </td>
-      <td className="type-cell">
+      <td className="px-4 py-3 text-sm text-primary-600 align-middle">
         {item.kind === 'directory' ? 'Folder' : 'File'}
       </td>
     </tr>

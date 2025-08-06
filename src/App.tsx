@@ -12,7 +12,6 @@ import { useModal } from './hooks/useModal';
 import { FileSystemItem } from './types/fileSystem';
 import { fileSystemAPI } from './utils/fileSystemAPI';
 import { FolderOpen, AlertCircle } from 'lucide-react';
-import './App.css';
 
 function App() {
   const {
@@ -370,18 +369,18 @@ function App() {
   if (!hasAccess) {
     return (
       <ErrorBoundary>
-        <div className="app">
-          <div className="access-screen">
-            <div className="access-content">
-              <FolderOpen size={64} className="access-icon" />
-              <h1>Fileslop</h1>
-              <p>
+        <div className="flex flex-col h-screen bg-white">
+          <div className="flex items-center justify-center h-screen p-8 bg-gradient-to-br from-white to-primary-50">
+            <div className="max-w-lg text-center bg-white p-12 rounded-xl shadow-lg border border-primary-200">
+              <FolderOpen size={64} className="text-accent-400 mb-6 mx-auto" />
+              <h1 className="text-3xl font-semibold mb-4 text-primary-900">Fileslop</h1>
+              <p className="text-primary-600 leading-relaxed mb-8">
                 This application allows you to browse and manage files using your browser.
                 Click the button below to select a folder to explore.
               </p>
               
               <button
-                className="access-button"
+                className="bg-accent-400 hover:bg-accent-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium px-6 py-3 rounded-lg transition-colors mb-8"
                 onClick={handleRequestAccess}
                 disabled={isLoading}
               >
@@ -389,15 +388,15 @@ function App() {
               </button>
 
               {error && (
-                <div className="error-message">
+                <div className="flex items-center gap-2 text-red-600 bg-red-50 p-4 rounded-lg mb-8 text-sm">
                   <AlertCircle size={20} />
                   {error}
                 </div>
               )}
 
-              <div className="access-info">
-                <h3>Features</h3>
-                <ul>
+              <div className="text-left mt-8 pt-8 border-t border-primary-200">
+                <h3 className="font-semibold text-primary-900 mb-4">Features</h3>
+                <ul className="text-primary-600 space-y-2 mb-6 pl-6 list-disc">
                   <li>Browse files and folders</li>
                   <li>Copy, cut, paste, and delete files</li>
                   <li>Create new files and folders</li>
@@ -408,7 +407,7 @@ function App() {
                   <li>Image thumbnails</li>
                 </ul>
                 
-                <p className="note">
+                <p className="text-sm text-primary-400 italic">
                   <strong>Note:</strong> This application requires a modern browser with File System Access API support (Chrome or Edge recommended).
                 </p>
               </div>
@@ -421,7 +420,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="app">
+      <div className="flex flex-col h-screen bg-white">
         <Toolbar
           currentPath={currentPath}
           canGoBack={canGoBack}
@@ -439,7 +438,7 @@ function App() {
           onCreateFile={handleCreateFile}
         />
 
-        <div className="app-content">
+        <div className="flex flex-1 overflow-hidden">
           <Sidebar
             bookmarks={bookmarks}
             currentPath={currentPath}
@@ -449,14 +448,19 @@ function App() {
             onShowPrompt={modal.showPrompt}
           />
 
-          <main className="main-content">
+          <main className="flex-1 flex flex-col overflow-hidden relative">
             {isLoading && <LoadingSpinner text="Loading files..." />}
             
             {error && (
-              <div className="error-banner">
+              <div className="flex items-center gap-3 px-4 py-3 bg-red-50 border-b border-red-200 text-red-600 text-sm">
                 <AlertCircle size={20} />
                 <span>{error}</span>
-                <button onClick={() => setError(null)}>×</button>
+                <button 
+                  onClick={() => setError(null)}
+                  className="ml-auto w-6 h-6 flex items-center justify-center text-red-600 hover:bg-red-100 rounded text-lg"
+                >
+                  ×
+                </button>
               </div>
             )}
 

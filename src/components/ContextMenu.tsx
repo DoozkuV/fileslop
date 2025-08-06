@@ -96,7 +96,11 @@ export function ContextMenu({
     shortcut?: string;
   }) => (
     <button
-      className={`context-menu-item ${disabled ? 'disabled' : ''}`}
+      className={`flex items-center gap-3 w-full px-3 py-2 border-none bg-transparent text-primary-900 cursor-pointer text-left text-sm transition-colors ${
+        disabled 
+          ? 'opacity-50 cursor-not-allowed' 
+          : 'hover:bg-primary-50'
+      }`}
       onClick={() => {
         if (!disabled) {
           onClick();
@@ -106,17 +110,17 @@ export function ContextMenu({
       disabled={disabled}
     >
       <Icon size={16} />
-      <span>{label}</span>
-      {shortcut && <span className="shortcut">{shortcut}</span>}
+      <span className="flex-1">{label}</span>
+      {shortcut && <span className="text-xs text-primary-400">{shortcut}</span>}
     </button>
   );
 
-  const Separator = () => <div className="context-menu-separator" />;
+  const Separator = () => <div className="h-px bg-primary-200 my-2" />;
 
   return (
     <div
       ref={menuRef}
-      className="context-menu"
+      className="fixed bg-white border border-primary-200 rounded-lg shadow-xl min-w-44 z-50 py-2"
       style={{ left: x, top: y }}
     >
       {item ? (

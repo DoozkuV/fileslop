@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { FileSystemState, FileSystemItem, FileOperationClipboard, Bookmark } from '../types/fileSystem';
+import { FileSystemState, FileSystemItem, Bookmark } from '../types/fileSystem';
 import { fileSystemAPI } from '../utils/fileSystemAPI';
 
 const BOOKMARKS_STORAGE_KEY = 'fileslop-bookmarks';

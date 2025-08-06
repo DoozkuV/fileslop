@@ -40,7 +40,7 @@ export class FileSystemAPI {
   ): Promise<FileSystemItem[]> {
     const items: FileSystemItem[] = [];
 
-    for await (const [name, handle] of dirHandle.entries()) {
+    for await (const [name, handle] of (dirHandle as any).entries()) {
       const itemPath = path === '/' ? `/${name}` : `${path}/${name}`;
       
       if (handle.kind === 'file') {
@@ -136,7 +136,6 @@ export class FileSystemAPI {
       throw new Error('Cannot rename root directory');
     }
 
-    const tempPath = `${item.parentPath}/__temp_${Date.now()}_${newName}`;
     await this.copyItem(item, item.parentPath);
     
     const parentHandle = await this.getDirectoryHandle(item.parentPath);
@@ -202,7 +201,7 @@ export class FileSystemAPI {
 
   private async copyDirectory(item: FileSystemItem, targetPath: string): Promise<void> {
     const targetHandle = await this.getDirectoryHandle(targetPath);
-    const newDirHandle = await targetHandle.getDirectoryHandle(item.name, { create: true });
+    await targetHandle.getDirectoryHandle(item.name, { create: true });
     
     const sourceItems = await this.navigateToPath(item.path);
     
